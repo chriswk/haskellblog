@@ -18,6 +18,7 @@ import Model
 import Text.Jasmine (minifym)
 import Text.Hamlet (hamletFile)
 import Yesod.Core.Types (Logger)
+import Yesod.Form.Nic (YesodNic, nicHtmlField)
 
 -- | The site argument for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -144,6 +145,7 @@ instance YesodAuth App where
 instance RenderMessage App FormMessage where
     renderMessage _ _ = defaultFormMessage
 
+instance YesodNic App
 -- | Get the 'Extra' value, used to hold data from the settings.yml file.
 getExtra :: Handler Extra
 getExtra = fmap (appExtra . settings) getYesod
