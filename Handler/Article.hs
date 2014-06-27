@@ -11,3 +11,4 @@ getArticleR articleId = do
     defaultLayout $ do
         setTitle $ toHtml $ articleTitle article
         $(widgetFile "article")
+

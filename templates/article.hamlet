@@ -1,7 +1,20 @@
-<h1> #{articleTitle article}
-<article> #{articleContent article}
-<hr>
-<div class="footnote">Posted at #{published}
-<hr>
+<div .col-lg-8>
+    <h1> #{articleTitle article}
+    <p class="lead">by 
+        <a href="">User
+    <hr>
+    <p>
+        <span class="glyphicon glyphicon-time">
+        Posted #{published}
+    <img src="http://placehold.it/600x300" class="img-responsive">
+    <hr>
+    #{articleContent article}
+    <hr>
+    <div class="well">
+        <h4>Leave a comment:</h4>
+        <form role="form">
+            <div class="form-group">
+                <textarea class="form-control" rows="3">
+            <button type="submit" class="btn btn-primary">Submit</button>
 <a href=@{BlogR}>
     Go to article list.

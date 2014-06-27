@@ -8,9 +8,9 @@ $newline never
     <head>
         <meta charset="UTF-8">
 
-        <title>#{pageTitle pc}
-        <meta name="description" content="">
-        <meta name="author" content="">
+        <title>chriswk - #{pageTitle pc}
+        <meta name="description" content="chriswk dot no">
+        <meta name="author" content="Christopher Kolstad">
 
         <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -19,30 +19,31 @@ $newline never
         \<!--[if lt IE 9]>
         \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         \<![endif]-->
-
         <script>
           document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
     <body>
-        <div class="container">
-            <header>
-            <div id="main" role="main">
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                        <span class="sr-only">Toggle navigation
+                        <span class="icon-bar">
+                        <span class="icon-bar">
+                        <span class="icon-bar">
+                    <a class="navbar-brand" href="@{BlogR}">chriswk's musings
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="">Archives
+                        <li>
+                            <a href="">Tags
+                        <li>
+                            <a href=""> (Hvis logget inn) My posts
+
+        <div .container>
+            <div .row>
               ^{pageBody pc}
             <footer>
-                #{extraCopyright $ appExtra $ settings master}
-
-        $maybe analytics <- extraAnalytics $ appExtra $ settings master
-            <script>
-              if(!window.location.href.match(/localhost/)){
-                window._gaq = [['_setAccount','#{analytics}'],['_trackPageview'],['_trackPageLoadTime']];
-                (function() {
-                \  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                \  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                \  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-                })();
-              }
-        \<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.  chromium.org/developers/how-tos/chrome-frame-getting-started -->
-        \<!--[if lt IE 7 ]>
-            <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js">
-            <script>
-                window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})
-        \<![endif]-->
+                <div .row>
+                    <div .col-lg-12>
+                        #{extraCopyright $ appExtra $ settings master}

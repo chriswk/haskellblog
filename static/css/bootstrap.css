@@ -6201,3 +6201,6 @@ button.close {
   }
 }
 /*# sourceMappingURL=bootstrap.css.map */
+body { 
+    margin-top: 50px;
+}
