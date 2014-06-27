@@ -13,4 +13,10 @@ Article
     posted  UTCTime
     content Html
     deriving Typeable
+Comment
+    article ArticleId
+    posted UTCTime
+    user UserId
+    name Text
+    text Textarea
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
