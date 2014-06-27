@@ -1,5 +1,7 @@
 <h1> #{articleTitle article}
 <article> #{articleContent article}
 <hr>
+<div class="footnote">Posted at #{published}
+<hr>
 <a href=@{BlogR}>
     Go to article list.

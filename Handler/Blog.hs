@@ -4,6 +4,8 @@ import Import
 
 import Data.Time (UTCTime, getCurrentTime)
 import Yesod.Form.Nic (YesodNic, nicHtmlField)
+import Data.Time.Format.Human (humanReadableTime')
+
 
 
 entryForm :: Form Article
@@ -14,6 +16,7 @@ entryForm = renderDivs $ Article
 
 getBlogR :: Handler Html
 getBlogR = do
+    now <- liftIO $ getCurrentTime
     articles <- runDB $ selectList [] [Desc ArticlePosted]
     (articleWidget, enctype) <- generateFormPost entryForm
     defaultLayout $ do
