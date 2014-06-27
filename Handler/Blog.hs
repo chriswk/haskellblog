@@ -2,8 +2,8 @@ module Handler.Blog where
 
 import Import
 
-import Data.Time (UTCTime, getCurrentTime)
-import Yesod.Form.Nic (YesodNic, nicHtmlField)
+import Data.Time (getCurrentTime)
+import Yesod.Form.Nic (nicHtmlField)
 import Data.Time.Format.Human (humanReadableTime')
 
 
@@ -16,7 +16,7 @@ entryForm = renderDivs $ Article
 
 getBlogR :: Handler Html
 getBlogR = do
-    now <- liftIO $ getCurrentTime
+    now <- liftIO getCurrentTime
     articles <- runDB $ selectList [] [Desc ArticlePosted]
     (articleWidget, enctype) <- generateFormPost entryForm
     defaultLayout $ do
