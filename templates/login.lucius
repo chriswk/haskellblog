@@ -1,0 +1,8 @@
+ul {
+  margin: 20px 0;
+  list-style: none;
+}
+input[type="image"] {
+  height: 64px;
+  width:  64px;
+}

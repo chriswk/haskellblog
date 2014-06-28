@@ -4,6 +4,7 @@ module Import
 
 import           Prelude              as Import hiding (head, init, last,
                                                  readFile, tail, writeFile)
+import           Yesod.Form.Bootstrap3 as Import 
 import           Yesod                as Import hiding (Route (..))
 
 import           Control.Applicative  as Import (pure, (<$>), (<*>))

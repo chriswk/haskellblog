@@ -4,7 +4,7 @@ import Prelude
 import Yesod
 import Yesod.Static
 import Yesod.Auth
-import Yesod.Auth.BrowserId
+import Yesod.Auth.OpenId
 import Yesod.Default.Config
 import Yesod.Default.Util (addStaticContentExternal)
 import Network.HTTP.Client.Conduit (Manager, HasHttpManager (getHttpManager))
@@ -19,6 +19,11 @@ import Text.Jasmine (minifym)
 import Text.Hamlet (hamletFile)
 import Yesod.Core.Types (Logger)
 import Yesod.Form.Nic (YesodNic)
+import Network.Gravatar
+import Yesod.RssFeed
+import Data.Text (Text)
+import Data.Maybe (fromMaybe)
+import qualified Data.Text as T
 
 -- | The site argument for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -50,6 +55,8 @@ mkYesodData "App" $(parseRoutesFile "config/routes")
 
 type Form x = Html -> MForm (HandlerT App IO) (FormResult x, Widget)
 
+type DB x = YesodDB App x
+
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
 instance Yesod App where
@@ -65,6 +72,8 @@ instance Yesod App where
         master <- getYesod
         mmsg <- getMessage
 
+        muid    <- maybeAuth
+        let mgrav = fmap getGravatar muid
         -- We break up the default layout into two components:
         -- default-layout is the contents of the body tag, and
         -- default-layout-wrapper is the entire page. Since the final
@@ -72,13 +81,27 @@ instance Yesod App where
         -- you to use normal widget features in default-layout.
 
         pc <- widgetToPageContent $ do
-            $(combineStylesheets 'StaticR
-                [ css_bootstrap_css,
-                  css_myblog_css
-                ])
+            rssLink FeedR "rss feed"
+
+
+            addStylesheet $ StaticR css_bootstrap_css
+            addStylesheet $ StaticR css_myblog_css
+
+            addScript $ StaticR js_jquery_min_js
+            addScript $ StaticR js_bootstrap_js
+
             $(widgetFile "default-layout")
         giveUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
+        where
+            getGravatar :: Entity User -> String
+            getGravatar (Entity _ u) = let email = fromMaybe "" $ userEmail u
+                                       in gravatar gravatarOpts email
 
+            gravatarOpts :: GravatarOptions
+            gravatarOpts = defaultConfig
+                { gSize     = Just $ Size 20
+                , gDefault  = Just MM
+                }
     -- This is done to provide an optimization for serving static files from
     -- a separate domain. Please see the staticRoot setting in Settings.hs
     urlRenderOverride y (StaticR s) =
@@ -110,6 +133,26 @@ instance Yesod App where
 
     makeLogger = return . appLogger
 
+    -- Authorization
+    isAuthorized ManageArticlesR    _ = authorizeAdmin
+    isAuthorized NewArticleR        _ = authorizeAdmin
+    isAuthorized (EditArticleR _)   _ = authorizeAdmin
+    isAuthorized (DelArticleR  _)   _ = authorizeAdmin
+    isAuthorized UsersR             _ = authorizeAdmin
+
+    isAuthorized _ _ = return Authorized
+
+authorizeAdmin :: HandlerT App IO AuthResult
+authorizeAdmin = do
+    mu <- maybeAuth
+
+    return $ case mu of
+        Just (Entity _ u) ->
+            if userAdmin u
+                then Authorized
+                else Unauthorized "Admin rights required"
+        _ -> AuthenticationRequired
+
 -- How to run database actions.
 instance YesodPersist App where
     type YesodPersistBackend App = SqlPersistT
@@ -121,25 +164,56 @@ instance YesodAuth App where
     type AuthId App = UserId
 
     -- Where to send a user after successful login
-    loginDest _ = HomeR
+    loginDest _ = RootR
     -- Where to send a user after logout
-    logoutDest _ = HomeR
+    logoutDest _ = RootR
 
     getAuthId creds = runDB $ do
-        x <- getBy $ UniqueUser $ credsIdent creds
+        x <- getBy $ UniqueIdent $ credsIdent creds
         case x of
-            Just (Entity uid _) -> return $ Just uid
-            Nothing -> do
-                fmap Just $ insert User
-                    { userIdent = credsIdent creds
-                    , userPassword = Nothing
-                    }
+            Just (Entity _ i) -> do
+                updateFromAx (credsExtra creds) $ identUser i
+                return $ Just $ identUser i
 
+            Nothing -> do
+                uid <- insert $ User Nothing Nothing False
+                _   <- insert $ Ident (credsIdent creds) uid
+                updateFromAx (credsExtra creds) uid
+                return $ Just uid
+        where
+            -- updates username/email with values returned by openid
+            -- unless values exist there already
+            updateFromAx :: [(Text, Text)] -> UserId -> DB ()
+            updateFromAx keys uid = maybe (return ()) go =<< get uid
+
+                where
+                    go :: User -> DB ()
+                    go u = do
+                        case (userName u, lookup "openid.ext1.value.email" keys) of
+                            (Nothing, val@(Just _)) -> update uid [UserName =. parseNick val]
+                            _                       -> return ()
+                        case (userEmail u, lookup "openid.ext1.value.email" keys) of
+                            (Nothing, val@(Just _)) -> update uid [UserEmail =. val]
+                            _                       -> return ()
+
+                    parseNick :: Maybe Text -> Maybe Text
+                    parseNick = fmap (T.takeWhile (/= '@'))
     -- You can add other plugins like BrowserID, email or OAuth here
-    authPlugins _ = [authBrowserId def]
+    authPlugins _ = [ authOpenId Claimed
+                        [  ("openid.ax.mode"         , "fetch_request"                          )
+                        ,  ("openid.ax.required"     , "email"                                  )
+                        ,  ("openid.ax.type.email"   , "http://schema.openid.net/contact/email" )
+                        ,  ("openid.ax.ns.ax"        , "http://openid.net/src/ax/1.0"           )
+                        ,  ("openid.ns.ax.required"  , "email"                                  )
+                        ,  ("openid.ui.icon"         , "true"                                   )
+                        ]
+                    ]
 
     authHttpManager = httpManager
 
+    loginHandler = lift $ defaultLayout $ do
+        setTitle "Login"
+        $(widgetFile "login")
 -- This instance is required to use forms. You can modify renderMessage to
 -- achieve customized and internationalized form validation messages.
 instance RenderMessage App FormMessage where

@@ -1,9 +1,19 @@
+
+
+/                       RootR                GET
+/archives               ArchivesR            GET
+/articles/#Text         ArticleR            GET POST
+
+/manage                 ManageArticlesR      GET POST
+/manage/new             NewArticleR          GET POST
+/manage/edit/#Text      EditArticleR         GET POST
+/manage/delete/#Text    DelArticleR          GET 
+/users                  UsersR               GET
+
+/feed               FeedR                GET
+/feed/#Text         FeedTagR             GET
+
+/favicon.ico        FaviconR             GET
+/robots.txt         RobotsR              GET
 /static StaticR Static getStatic
 /auth   AuthR   Auth   getAuth
-
-/favicon.ico FaviconR GET
-/robots.txt RobotsR GET
-
-/ HomeR GET
-/blog BlogR GET POST
-/blog/#ArticleId ArticleR GET

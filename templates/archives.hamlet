@@ -1,0 +1,17 @@
+<div .page-header>
+    Archives
+
+<div .post-listing>
+    <table .table .table-bordered .table-condensed .table-striped>
+        <thead>
+            <tr>
+                <th>Title
+                <th>Posted
+
+        <tbody .link>
+            $forall Entity _ article <- articles
+                <tr>
+                    <td>
+                        <a href="@{ArticleR $ articleSlug article}">
+                            #{articleTitle article}
+                    <td>#{humanReadableTime' now $ articlePosted article}

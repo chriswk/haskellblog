@@ -30,11 +30,11 @@ $newline never
                         <span class="icon-bar">
                         <span class="icon-bar">
                         <span class="icon-bar">
-                    <a class="navbar-brand" href="@{BlogR}">chriswk's musings
+                    <a class="navbar-brand" href="@{RootR}">chriswk's musings
                 <div class="collapse navbar-collapse navbar-ex1-collapse">
                     <ul class="nav navbar-nav">
                         <li>
-                            <a href="">Archives
+                            <a href="@{ArchivesR}">Archives
                         <li>
                             <a href="">Tags
                         <li>

@@ -18,6 +18,8 @@ import Settings.Development
 import Data.Default (def)
 import Text.Hamlet
 
+import qualified Data.Text as T
+import Yesod hiding (setTitle)
 -- | Which Persistent backend this site is using.
 type PersistConf = PostgresConf
 
@@ -64,6 +66,14 @@ widgetFile :: String -> Q Exp
 widgetFile = (if development then widgetFileReload
                              else widgetFileNoReload)
               widgetFileSettings
+
+addKeywords :: [Text] -> WidgetT m IO ()
+addKeywords ws = toWidgetHead [hamlet|<meta name="keywords" content="#{format ws}">|]
+
+    where
+        format :: [Text] -> Text
+        format = T.append "chriswk, ckolstad, " . T.intercalate ", "
+
 
 data Extra = Extra
     { extraCopyright :: Text

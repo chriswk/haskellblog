@@ -19,9 +19,12 @@ library
                      Settings
                      Settings.StaticFiles
                      Settings.Development
-                     Handler.Home
-                     Handler.Blog
-                     Handler.Article
+                     Helpers.Article
+                     Handler.Articles
+                     Handler.Archives
+                     Handler.Feed
+                     Handler.Users
+                     Handler.Root
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
@@ -49,6 +52,7 @@ library
                  , yesod-auth                    >= 1.3        && < 1.4
                  , yesod-static                  >= 1.2        && < 1.3
                  , yesod-form                    >= 1.3        && < 1.4
+                 , yesod-newsfeed                >= 1.2        && < 1.3
                  , bytestring                    >= 0.9        && < 0.11
                  , text                          >= 0.11       && < 2.0
                  , persistent                    >= 1.3        && < 1.4
@@ -71,6 +75,8 @@ library
                  , fast-logger                   >= 2.1.4      && < 2.2
                  , wai-logger                    >= 2.1        && < 2.2
                  , friendly-time                 >= 0.3        && < 0.4
+                 , yesod-paginator
+                 , gravatar
 
 
 executable         MyBlog
